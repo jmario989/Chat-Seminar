@@ -1,4 +1,19 @@
-function ChatRoom() {
+import React from 'react';
+
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+import firestore from 'firebase/app';
+
+
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+import { useState, useRef, auth } from 'react';
+
+import ChatMessage from './';
+
+
+const ChatRoom = () => {
 
     const dummy = useRef()
     
@@ -49,3 +64,4 @@ function ChatRoom() {
     
     }
     
+    export default ChatRoom;
