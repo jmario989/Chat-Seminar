@@ -1,22 +1,14 @@
 import React from 'react';
-
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import 'firebase/auth';
-import firestore from 'firebase/app';
-
-
 import { useCollectionData } from 'react-firebase-hooks/firestore';
-
-import { useState, useRef, auth } from 'react';
-
-import ChatMessage from './';
+import { useState, useRef } from 'react';
+import ChatMessage from '../ChatMessage';
+import firebase, {firestore, auth} from "../../firebaseClient";
 
 
 const ChatRoom = () => {
 
-    const dummy = useRef()
-    
+    const dummy = useRef();
+    console.log(firebase);
     const messagesRef = firestore.collection('messages');
     const query = messagesRef.orderBy('createdAt').limit(25);
     
@@ -32,7 +24,7 @@ const ChatRoom = () => {
     
       await messagesRef.add({
         text: formValue,
-        createdAt: firebase.firestore.FieldValue.serverTimestap(),
+        createdAt: firebase?.firestore?.FieldValue?.serverTimestamp(),
         uid,
         photoURL
       })
