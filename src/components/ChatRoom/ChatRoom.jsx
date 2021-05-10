@@ -1,59 +1,63 @@
-import React from 'react';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-import { useState, useRef } from 'react';
-import ChatMessage from '../ChatMessage';
-import firebase, {firestore, auth} from "../../firebaseClient";
-
+import React from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useState, useRef } from "react";
+import ChatMessage from "../ChatMessage";
+import firebase, { firestore, auth } from "../../firebaseClient";
 
 const ChatRoom = () => {
+  const inView = useRef(null);
+  const messagesRef = firestore.collection("messages");
+  const query = messagesRef.orderBy("createdAt").limit(25);
+  const [messages] = useCollectionData(query, { idField: "id" });
+  const [formValue, setFormValue] = useState("");
 
-    const dummy = useRef();
-    console.log(firebase);
-    const messagesRef = firestore.collection('messages');
-    const query = messagesRef.orderBy('createdAt').limit(25);
-    
-    const [messages] = useCollectionData(query, {idField: 'id'})
-    
-    const [formValue, setFormValue] = useState('');
-    
-    const sendMessage = async(e) => {
-       
-      e.preventDefault();
-    
-      const { uid, photoURL } = auth.currentUser;
-    
-      await messagesRef.add({
-        text: formValue,
-        createdAt: firebase?.firestore?.FieldValue?.serverTimestamp(),
-        uid,
-        photoURL
-      })
-      
-      setFormValue('');
-    
-      dummy.current.scrollIntoView({ behavior: 'smooth' });
+  const scrollIntoView = () => {
+    if (inView?.current) {
+      inView.current.scrollIntoView({ behavior: "smooth" });
     }
-    
-    return (
-      <>
-        <main>
-          {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
-    
-          <div ref={dummy}></div>
-        
-        </main>
-    
-        <form onSubmit={sendMessage}>
-    
-         <input value={formValue} onChange={(e) => setFormValue(e.target.value)} />
-    
-         <button type="submit">📨</button>
-    
-        </form>
-    
-        </>
-    )
-    
+  };
+
+  const sendMessage = async (e) => {
+    if (!formValue) {
+      return;
     }
-    
-    export default ChatRoom;
+
+    e.preventDefault();
+    const { uid, photoURL } = auth.currentUser;
+
+    setFormValue("");
+    scrollIntoView();
+
+    await messagesRef.add({
+      text: formValue,
+      createdAt: firebase?.firestore?.FieldValue?.serverTimestamp(),
+      uid,
+      photoURL,
+    });
+  };
+
+  return (
+    <>
+      <main>
+        {messages?.map((msg) => (
+          <ChatMessage key={msg.id} message={msg} />
+        ))}
+
+        <div ref={inView} />
+      </main>
+
+      <form onSubmit={(e) => sendMessage(e)}>
+        <input
+          value={formValue}
+          onChange={(e) => setFormValue(e.target.value)}
+        />
+
+        <button type="submit" disabled={!formValue}>
+          📨
+        </button>
+      </form>
+    </>
+  );
+};
+
+export default ChatRoom;

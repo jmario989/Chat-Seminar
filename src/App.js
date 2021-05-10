@@ -1,25 +1,22 @@
-import React, { useRef, useState } from 'react';
+import React from "react";
 import SignIn from "./components/SignIn";
 import SignOut from "./components/SignOut";
 import ChatRoom from "./components/ChatRoom";
-import {GoogleUser} from "./firebaseClient";
+import { GoogleUser } from "./firebaseClient";
 
-import './App.css';
+import "./App.css";
 
 function App() {
-const user=GoogleUser();
-  
-return (
+  const user = GoogleUser();
+
+  return (
     <div className="App">
       <header>
         <h1>Mario Chat Algebra💬</h1>
         <SignOut />
       </header>
 
-      <section>
-        {user ? <ChatRoom /> : <SignIn />}
-      </section>
-
+      <section>{user ? <ChatRoom /> : <SignIn />}</section>
     </div>
   );
 }
